@@ -14,11 +14,17 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class BroadcastDonator extends JavaPlugin {
 
-	// Variable declaration
+	/** Declares the logger. The logger allows you to write information to the console and to the
+	/* server.log file
+	 */
 	Logger log = Logger.getLogger("Minecraft");
 	
+	// Declaration for permissions support
 	public static PermissionHandler permissionHandler;
 
+	/** Plugin's command handler. One command supported (/bd) with the permission node
+	/* "broadcastdonator.use" to use the command
+	 */
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(cmd.getName().equalsIgnoreCase("bd")){ // If the player typed /bd then do the following...
 			Player commandTyper = (Player)sender;
@@ -31,17 +37,25 @@ public class BroadcastDonator extends JavaPlugin {
 		return false; 
 	}
 
+	// Called on a clean stop of the server
 	public void onDisable() {
 
 	}
 
+	// Called on server start
 	public void onEnable() {
 		log.info("[BD] Initiating plugin...");
+		// Sets up permissions
 		setupPermissions();
 		log.info("[BD] Initialized");
 	}
 	
-	// Permissions setup
+	// Converts the any hex color in the string to actual color
+	public String hexToColor(String string) {
+		return string.replace("&([0-9a-f])", "\u00A7$1");
+	}
+	
+	// Permissions setup method. Called only at server start
 	private void setupPermissions() {
 	    if (permissionHandler != null) {
 	        return;
