@@ -13,7 +13,7 @@ public class Config {
 	}
 
 	public String directory = "plugins" + File.separator
-			+ plugin.getDescription().getName();
+			+ "BroadcastDonator";
 	File file = new File(directory + File.separator + "config.yml");
 
 	public void configCheck() {
