@@ -14,16 +14,18 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class BroadcastDonator extends JavaPlugin {
 
-	/** Declares the logger. The logger allows you to write information to the console and to the
-	/* server.log file
+	/**
+	/* Declares the logger. The logger allows you to write information to the console and to the
+	 * server.log file
 	 */
 	Logger log = Logger.getLogger("Minecraft");
 	
 	// Declaration for permissions support
 	public static PermissionHandler permissionHandler;
 
-	/** Plugin's command handler. One command supported (/bd) with the permission node
-	/* "broadcastdonator.use" to use the command
+	/** 
+	/* Plugin's command handler. One command supported (/bd) with the permission node
+	 * "broadcastdonator.use" to use the command
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(cmd.getName().equalsIgnoreCase("bd")){ // If the player typed /bd then do the following...
