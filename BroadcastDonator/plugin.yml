@@ -1,0 +1,7 @@
+name: BroadcastDonator
+main: xrevolut1onzx.broadcastdonator.BroadcastDonator
+version: 1.0.1
+commands:
+    bd:
+        description: Used to display the set donator message
+        usage: /<command>
