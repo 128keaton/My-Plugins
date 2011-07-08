@@ -12,39 +12,44 @@ import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class BroadcastDonator extends JavaPlugin {
-	
-	// Configuration file variables
-	Config config = new Config(this);
-	
-	// Variable containing the message to broadcast to the server
-	public String messageToSendRaw;
-	// Raw contains the hex code for colors. messageToSend contains actual colors
-	public String messageToSend;
 
 	/**
-	/* Declares the logger. The logger allows you to write information to the console and to the
-	 * server.log file
+	 * String that is used to contain the message that is broadcast throughout
+	 * the server
+	 */
+	public String messageToSend = "Test";
+
+	/**
+	 * Declares the logger. The logger allows you to write information to the
+	 * console and to the server.log file
 	 */
 	Logger log = Logger.getLogger("Minecraft");
-	
+
 	// Declaration for permissions support
 	public static PermissionHandler permissionHandler;
 
-	/** 
-	/* Plugin's command handler. One command supported (/bd) with the permission node
-	 * "broadcastdonator.use" to use the command
+	/**
+	 * /* Plugin's command handler. One command supported (/bd) with the
+	 * permission node "broadcastdonator.use" to use the command
 	 */
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		if(cmd.getName().equalsIgnoreCase("bd")){ // If the player typed /bd then do the following...
-			Player commandTyper = (Player)sender;
-			if (!BroadcastDonator.permissionHandler.has(commandTyper, "broadcastdonator.use")) {
-			      return true;
+	public boolean onCommand(CommandSender sender, Command cmd,
+			String commandLabel, String[] args) {
+		if (cmd.getName().equalsIgnoreCase("bd")) { // If the player typed /bd
+													// then do the following...
+			Player commandTyper = (Player) sender;
+			if (!BroadcastDonator.permissionHandler.has(commandTyper,
+					"broadcastdonator.use")) {
+				return true;
 			}
-			messageToSend = hexToColor(messageToSendRaw);
-			getServer().broadcastMessage(messageToSend);
+			if (messageToSend != null) {
+				getServer().broadcastMessage(messageToSend);
+			} else {
+				log.info("You didn't set the message to broadcast!");
+			}
 			return true;
-		} //If this has happened the function will break and return true. if this hasn't happened the a value of false will be returned.
-		return false; 
+		} // If this has happened the function will break and return true. if
+			// this hasn't happened the a value of false will be returned.
+		return false;
 	}
 
 	// Called on a clean stop of the server
@@ -58,30 +63,24 @@ public class BroadcastDonator extends JavaPlugin {
 		// Sets up permissions
 		setupPermissions();
 		log.info("[BD] Initialized");
-		// Handles the configuration file
-		config.configCheck();
 	}
-	
-	// Converts the any hex color in the string to actual color
-	public String hexToColor(String string) {
-		return string.replace("&([0-9a-f])", "\u00A7$1");
-	}
-	
+
 	// Permissions setup method. Called only at server start
 	private void setupPermissions() {
-	    if (permissionHandler != null) {
-	        return;
-	    }
-	    
-	    Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
-	    
-	    if (permissionsPlugin == null) {
-	        log.info("[BD] Permission system not detected, defaulting to OP");
-	        return;
-	    }
-	    
-	    permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-	    log.info("[BD] Permissions found, using permissions instead of OP");
+		if (permissionHandler != null) {
+			return;
+		}
+
+		Plugin permissionsPlugin = this.getServer().getPluginManager()
+				.getPlugin("Permissions");
+
+		if (permissionsPlugin == null) {
+			log.info("[BD] Permission system not detected, defaulting to OP");
+			return;
+		}
+
+		permissionHandler = ((Permissions) permissionsPlugin).getHandler();
+		log.info("[BD] Permissions found, using permissions instead of OP");
 	}
 
 }
