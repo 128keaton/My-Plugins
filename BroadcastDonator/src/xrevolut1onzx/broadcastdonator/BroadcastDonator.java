@@ -2,7 +2,6 @@ package xrevolut1onzx.broadcastdonator;
 
 import java.util.logging.Logger;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,6 +12,14 @@ import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class BroadcastDonator extends JavaPlugin {
+	
+	// Configuration file variables
+	Config config = new Config(this);
+	
+	// Variable containing the message to broadcast to the server
+	public String messageToSendRaw;
+	// Raw contains the hex code for colors. messageToSend contains actual colors
+	public String messageToSend;
 
 	/**
 	/* Declares the logger. The logger allows you to write information to the console and to the
@@ -33,7 +40,8 @@ public class BroadcastDonator extends JavaPlugin {
 			if (!BroadcastDonator.permissionHandler.has(commandTyper, "broadcastdonator.use")) {
 			      return true;
 			}
-			getServer().broadcastMessage("[" + ChatColor.DARK_RED + "Server" + ChatColor.WHITE + "] " + ChatColor.RED + "Enjoy EvoServer? Consider donating to fund the server! Options available on the website.");
+			messageToSend = hexToColor(messageToSendRaw);
+			getServer().broadcastMessage(messageToSend);
 			return true;
 		} //If this has happened the function will break and return true. if this hasn't happened the a value of false will be returned.
 		return false; 
@@ -50,6 +58,8 @@ public class BroadcastDonator extends JavaPlugin {
 		// Sets up permissions
 		setupPermissions();
 		log.info("[BD] Initialized");
+		// Handles the configuration file
+		config.configCheck();
 	}
 	
 	// Converts the any hex color in the string to actual color
