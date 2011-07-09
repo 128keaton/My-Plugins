@@ -84,10 +84,30 @@ public class BroadcastDonator extends JavaPlugin {
 							"broadcastdonator.reload")) {
 						onReload();
 						log("Plugin reloaded by " + commandTyper.getName());
+						commandTyper.sendMessage("Plugin reloaded");
+						return true;
+					}
+					return false;
+				} else if (args[0].equalsIgnoreCase("preview")) {
+					if (BroadcastDonator.permissionHandler.has(commandTyper,
+							"broadcastdonator.use")) {
+						if (rawMessage != null) {
+							String finalMessage = new String(
+									rawMessage.replaceAll("&([0-9a-f])",
+											"\u00A7$1"));
+							commandTyper.sendMessage(ChatColor.DARK_RED
+									+ "Preview: " + ChatColor.WHITE + finalMessage);
+						} else {
+							commandTyper
+									.sendMessage(ChatColor.DARK_RED
+											+ "Reload the configuration file to load your message!");
+							log("Reload the configuration file to load your message!");
+						}
 						return true;
 					}
 					return false;
 				}
+				return false;
 			} else {
 				return false;
 			}
@@ -127,8 +147,8 @@ public class BroadcastDonator extends JavaPlugin {
 	public void handleRecurringMessage() {
 		if (recurringMessage) {
 			int timeDelayInTicks = timeDelay * 1200;
-			getServer().getScheduler()
-					.scheduleAsyncRepeatingTask(this, new Runnable() {
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this,
+					new Runnable() {
 						public void run() {
 							if (rawMessage != null) {
 								String finalMessage = new String(rawMessage
