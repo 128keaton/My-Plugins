@@ -4,4 +4,4 @@ version: 1.0.0
 commands:
     bd:
         description: Used to display the set donator message
-        usage: /<command>
+        usage: /<command> [reload/broadcast]

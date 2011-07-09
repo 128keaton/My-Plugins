@@ -30,7 +30,7 @@ public class BroadcastDonator extends JavaPlugin {
 	 * String that is used to contain the message that is broadcast throughout
 	 * the server
 	 */
-	public String messageToSend;
+	public String rawMessage;
 
 	/**
 	 * Declares the logger. The logger allows you to write information to the
@@ -43,27 +43,49 @@ public class BroadcastDonator extends JavaPlugin {
 	public static PermissionHandler permissionHandler;
 
 	/**
-	 * /* Plugin's command handler. One command supported (/bd) with the
-	 * permission node "broadcastdonator.use" to use the command
+	 * Plugin's command handler. One command supported (/bd) with the permission
+	 * node "broadcastdonator.use" to use the command
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("bd")) { // If the player typed /bd
 													// then do the following...
 			Player commandTyper = (Player) sender;
-			if (!BroadcastDonator.permissionHandler.has(commandTyper,
-					"broadcastdonator.use")) {
-				return true;
+			if (args[0] == null) {
+				return false;
 			}
-			if (messageToSend != null) {
-				getServer().broadcastMessage(messageToSend);
-			} else {
-				commandTyper.sendMessage(ChatColor.DARK_RED + "Reload the configuration file to load your message!");
-				log("Reload the configuration file to load your message!");
+			if (args[0].equalsIgnoreCase("broadcast")) {
+				if (BroadcastDonator.permissionHandler.has(commandTyper,
+						"broadcastdonator.use")) {
+					if (rawMessage != null) {
+						String finalMessage = new String(rawMessage.replaceAll(
+								"&([0-9a-f])", "\u00A7$1"));
+						getServer().broadcastMessage(finalMessage);
+						log(finalMessage);
+						log("Manual command used by " + commandTyper.getName());
+					} else {
+						commandTyper
+								.sendMessage(ChatColor.DARK_RED
+										+ "Reload the configuration file to load your message!");
+						log("Reload the configuration file to load your message!");
+					}
+					return true;
+				}
+				return false;
+			} else if (args[0].equalsIgnoreCase("reload")) {
+				if (BroadcastDonator.permissionHandler.has(commandTyper,
+						"broadcastdonator.reload")) {
+					loadConfigFile();
+					commandTyper
+							.sendMessage("Reloaded configuration file successfully");
+					log("Configuration file reloaded by "
+							+ commandTyper.getName());
+					return true;
+				}
+				return false;
 			}
-			return true;
 		} // If this has happened the function will break and return true. if
-			// this hasn't happened the a value of false will be returned.
+			// this hasn't happened the value of false will be returned.
 		return false;
 	}
 
@@ -109,7 +131,7 @@ public class BroadcastDonator extends JavaPlugin {
 		try {
 			FileInputStream input = new FileInputStream(config);
 			prop.load(input);
-			messageToSend = prop.getProperty("MessageToBroadcast");
+			rawMessage = prop.getProperty("MessageToBroadcast");
 			input.close();
 		} catch (FileNotFoundException ex) {
 			ex.printStackTrace();
@@ -117,8 +139,8 @@ public class BroadcastDonator extends JavaPlugin {
 			ex.printStackTrace();
 		}
 	}
-	
-	public void log (String message) {
+
+	public void log(String message) {
 		log.info(logPrefix + message);
 	}
 
@@ -137,7 +159,7 @@ public class BroadcastDonator extends JavaPlugin {
 		}
 
 		permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-		log("Permissions found, using permissions instead of OP");
+		log("Successfully hooked into Permissions");
 	}
 
 }
