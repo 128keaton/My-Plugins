@@ -66,7 +66,11 @@ public class BroadcastDonator extends JavaPlugin {
 							String finalMessage = new String(
 									rawMessage.replaceAll("&([0-9a-f])",
 											"\u00A7$1"));
-							getServer().broadcastMessage(finalMessage);
+							for (Player player : getServer().getOnlinePlayers()) {
+								if (!BroadcastDonator.permissionHandler.has(player, "broadcastdonator.seemessage")) {
+									player.sendMessage(finalMessage);
+								}
+							}
 							log(finalMessage);
 							log("Manual command used by "
 									+ commandTyper.getName());
@@ -153,7 +157,11 @@ public class BroadcastDonator extends JavaPlugin {
 							if (rawMessage != null) {
 								String finalMessage = new String(rawMessage
 										.replaceAll("&([0-9a-f])", "\u00A7$1"));
-								getServer().broadcastMessage(finalMessage);
+								for (Player player : getServer().getOnlinePlayers()) {
+									if (!BroadcastDonator.permissionHandler.has(player, "broadcastdonator.seemessage")) {
+										player.sendMessage(finalMessage);
+									}
+								}
 								log(finalMessage);
 								log("Message broadcasted by repeater");
 							} else {
