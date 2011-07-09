@@ -51,37 +51,43 @@ public class BroadcastDonator extends JavaPlugin {
 		if (cmd.getName().equalsIgnoreCase("bd")) { // If the player typed /bd
 													// then do the following...
 			Player commandTyper = (Player) sender;
-			if (args[0] == null) {
+			if (args.length == 0) {
+				// No arguments
 				return false;
-			}
-			if (args[0].equalsIgnoreCase("broadcast")) {
-				if (BroadcastDonator.permissionHandler.has(commandTyper,
-						"broadcastdonator.use")) {
-					if (rawMessage != null) {
-						String finalMessage = new String(rawMessage.replaceAll(
-								"&([0-9a-f])", "\u00A7$1"));
-						getServer().broadcastMessage(finalMessage);
-						log(finalMessage);
-						log("Manual command used by " + commandTyper.getName());
-					} else {
-						commandTyper
-								.sendMessage(ChatColor.DARK_RED
-										+ "Reload the configuration file to load your message!");
-						log("Reload the configuration file to load your message!");
+			} else if (args.length == 1) {
+				if (args[0].equalsIgnoreCase("broadcast")) {
+					if (BroadcastDonator.permissionHandler.has(commandTyper,
+							"broadcastdonator.use")) {
+						if (rawMessage != null) {
+							String finalMessage = new String(
+									rawMessage.replaceAll("&([0-9a-f])",
+											"\u00A7$1"));
+							getServer().broadcastMessage(finalMessage);
+							log(finalMessage);
+							log("Manual command used by "
+									+ commandTyper.getName());
+						} else {
+							commandTyper
+									.sendMessage(ChatColor.DARK_RED
+											+ "Reload the configuration file to load your message!");
+							log("Reload the configuration file to load your message!");
+						}
+						return true;
 					}
-					return true;
+					return false;
+				} else if (args[0].equalsIgnoreCase("reload")) {
+					if (BroadcastDonator.permissionHandler.has(commandTyper,
+							"broadcastdonator.reload")) {
+						loadConfigFile();
+						commandTyper
+								.sendMessage("Reloaded configuration file successfully");
+						log("Configuration file reloaded by "
+								+ commandTyper.getName());
+						return true;
+					}
+					return false;
 				}
-				return false;
-			} else if (args[0].equalsIgnoreCase("reload")) {
-				if (BroadcastDonator.permissionHandler.has(commandTyper,
-						"broadcastdonator.reload")) {
-					loadConfigFile();
-					commandTyper
-							.sendMessage("Reloaded configuration file successfully");
-					log("Configuration file reloaded by "
-							+ commandTyper.getName());
-					return true;
-				}
+			} else {
 				return false;
 			}
 		} // If this has happened the function will break and return true. if
@@ -117,7 +123,7 @@ public class BroadcastDonator extends JavaPlugin {
 				prop.store(output, "Edit the configurations to your liking");
 				output.flush();
 				output.close();
-				log("Configuration file created. Please go update and reload it.");
+				log("Configuration file created. Please configure and reload it.");
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
