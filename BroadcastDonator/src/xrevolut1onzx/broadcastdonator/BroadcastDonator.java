@@ -84,7 +84,7 @@ public class BroadcastDonator extends JavaPlugin {
 							"broadcastdonator.reload")) {
 						onReload();
 						log("Plugin reloaded by " + commandTyper.getName());
-						commandTyper.sendMessage("Plugin reloaded");
+						commandTyper.sendMessage(ChatColor.GRAY + "Plugin reloaded");
 						return true;
 					}
 					return false;
