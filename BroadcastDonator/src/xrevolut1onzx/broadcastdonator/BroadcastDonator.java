@@ -32,6 +32,10 @@ public class BroadcastDonator extends JavaPlugin {
 	 */
 	public String rawMessage;
 
+	// If true, message will repeat at set interval
+	public static boolean recurringMessage;
+	public static int timeDelay;
+
 	/**
 	 * Declares the logger. The logger allows you to write information to the
 	 * console and to the server.log file
@@ -78,11 +82,8 @@ public class BroadcastDonator extends JavaPlugin {
 				} else if (args[0].equalsIgnoreCase("reload")) {
 					if (BroadcastDonator.permissionHandler.has(commandTyper,
 							"broadcastdonator.reload")) {
-						loadConfigFile();
-						commandTyper
-								.sendMessage("Reloaded configuration file successfully");
-						log("Configuration file reloaded by "
-								+ commandTyper.getName());
+						onReload();
+						log("Plugin reloaded by " + commandTyper.getName());
 						return true;
 					}
 					return false;
@@ -97,7 +98,19 @@ public class BroadcastDonator extends JavaPlugin {
 
 	// Called on a clean stop of the server
 	public void onDisable() {
+		getServer().getScheduler().cancelAllTasks();
 		log("Disabled");
+	}
+
+	// Called when the plugin needs to be reloaded
+	public void onReload() {
+		log("Reloading...");
+		getServer().getScheduler().cancelAllTasks();
+		manageConfigFile();
+		permissionHandler = null;
+		setupPermissions();
+		handleRecurringMessage();
+		log("Reloaded");
 	}
 
 	// Called on server start
@@ -107,7 +120,28 @@ public class BroadcastDonator extends JavaPlugin {
 		manageConfigFile();
 		// Sets up permissions
 		setupPermissions();
+		handleRecurringMessage();
 		log("Initialized");
+	}
+
+	public void handleRecurringMessage() {
+		if (recurringMessage) {
+			int timeDelayInTicks = timeDelay * 1200;
+			getServer().getScheduler()
+					.scheduleAsyncRepeatingTask(this, new Runnable() {
+						public void run() {
+							if (rawMessage != null) {
+								String finalMessage = new String(rawMessage
+										.replaceAll("&([0-9a-f])", "\u00A7$1"));
+								getServer().broadcastMessage(finalMessage);
+								log(finalMessage);
+								log("Message broadcasted by repeater");
+							} else {
+								log("Reload the configuration file to load your message!");
+							}
+						}
+					}, 60L, timeDelayInTicks);
+		}
 	}
 
 	// Manages the configuration file
@@ -120,6 +154,8 @@ public class BroadcastDonator extends JavaPlugin {
 				prop.put(
 						"MessageToBroadcast",
 						"[Server] Enjoy this server? Consider donating to help fund it! Options available on our website.");
+				prop.put("Recurring-Broadcast", "false");
+				prop.put("Time-between-messages-in-minutes", "30");
 				prop.store(output, "Edit the configurations to your liking");
 				output.flush();
 				output.close();
@@ -138,6 +174,10 @@ public class BroadcastDonator extends JavaPlugin {
 			FileInputStream input = new FileInputStream(config);
 			prop.load(input);
 			rawMessage = prop.getProperty("MessageToBroadcast");
+			recurringMessage = Boolean.parseBoolean(prop
+					.getProperty("Recurring-Broadcast"));
+			timeDelay = Integer.parseInt(prop
+					.getProperty("Time-between-messages-in-minutes"));
 			input.close();
 		} catch (FileNotFoundException ex) {
 			ex.printStackTrace();
