@@ -8,15 +8,10 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class BroadcastDonator extends JavaPlugin {
 
@@ -43,8 +38,10 @@ public class BroadcastDonator extends JavaPlugin {
 	public static final String logPrefix = "[BD] ";
 	Logger log = Logger.getLogger("Minecraft");
 
-	// Declaration for permissions support
-	public static PermissionHandler permissionHandler;
+	// Initiates helping classes
+	public PermissionManager permissionManager = new PermissionManager(this);
+
+	public CommandsHandler commandsHandler = new CommandsHandler(this);
 
 	/**
 	 * Plugin's command handler. One command supported (/bd) with the permission
@@ -52,71 +49,28 @@ public class BroadcastDonator extends JavaPlugin {
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("bd")) { // If the player typed /bd
-													// then do the following...
+		if (cmd.getName().equalsIgnoreCase("bd")) {
 			Player commandTyper = (Player) sender;
 			if (args.length == 0) {
 				// No arguments
 				return false;
 			} else if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("broadcast")) {
-					if (BroadcastDonator.permissionHandler.has(commandTyper,
-							"broadcastdonator.use")) {
-						if (rawMessage != null) {
-							String finalMessage = new String(
-									rawMessage.replaceAll("&([0-9a-f])",
-											"\u00A7$1"));
-							for (Player player : getServer().getOnlinePlayers()) {
-								if (!BroadcastDonator.permissionHandler.has(player, "broadcastdonator.seemessage")) {
-									player.sendMessage(finalMessage);
-								}
-							}
-							log(finalMessage);
-							log("Manual command used by "
-									+ commandTyper.getName());
-						} else {
-							commandTyper
-									.sendMessage(ChatColor.DARK_RED
-											+ "Reload the configuration file to load your message!");
-							log("Reload the configuration file to load your message!");
-						}
-						return true;
-					}
-					return false;
+					commandsHandler.broadcast(commandTyper);
+					return true;
+
 				} else if (args[0].equalsIgnoreCase("reload")) {
-					if (BroadcastDonator.permissionHandler.has(commandTyper,
-							"broadcastdonator.reload")) {
-						onReload();
-						log("Plugin reloaded by " + commandTyper.getName());
-						commandTyper.sendMessage(ChatColor.GRAY + "Plugin reloaded");
-						return true;
-					}
-					return false;
+					commandsHandler.reload(commandTyper);
+					return true;
 				} else if (args[0].equalsIgnoreCase("preview")) {
-					if (BroadcastDonator.permissionHandler.has(commandTyper,
-							"broadcastdonator.use")) {
-						if (rawMessage != null) {
-							String finalMessage = new String(
-									rawMessage.replaceAll("&([0-9a-f])",
-											"\u00A7$1"));
-							commandTyper.sendMessage(ChatColor.DARK_RED
-									+ "Preview: " + ChatColor.WHITE + finalMessage);
-						} else {
-							commandTyper
-									.sendMessage(ChatColor.DARK_RED
-											+ "Reload the configuration file to load your message!");
-							log("Reload the configuration file to load your message!");
-						}
-						return true;
-					}
-					return false;
+					commandsHandler.preview(commandTyper);
+					return true;
 				}
 				return false;
 			} else {
 				return false;
 			}
-		} // If this has happened the function will break and return true. if
-			// this hasn't happened the value of false will be returned.
+		}
 		return false;
 	}
 
@@ -131,8 +85,8 @@ public class BroadcastDonator extends JavaPlugin {
 		log("Reloading...");
 		getServer().getScheduler().cancelAllTasks();
 		manageConfigFile();
-		permissionHandler = null;
-		setupPermissions();
+		permissionManager.disablePermissions();
+		permissionManager.setupPermissions();
 		handleRecurringMessage();
 		log("Reloaded");
 	}
@@ -143,7 +97,7 @@ public class BroadcastDonator extends JavaPlugin {
 		// Handles the configuration file
 		manageConfigFile();
 		// Sets up permissions
-		setupPermissions();
+		permissionManager.setupPermissions();
 		handleRecurringMessage();
 		log("Initialized");
 	}
@@ -157,8 +111,15 @@ public class BroadcastDonator extends JavaPlugin {
 							if (rawMessage != null) {
 								String finalMessage = new String(rawMessage
 										.replaceAll("&([0-9a-f])", "\u00A7$1"));
-								for (Player player : getServer().getOnlinePlayers()) {
-									if (!BroadcastDonator.permissionHandler.has(player, "broadcastdonator.seemessage")) {
+								for (Player player : getServer()
+										.getOnlinePlayers()) {
+									if (PermissionManager.usingPermissions) {
+										if (!PermissionManager.permissionHandler
+												.has(player,
+														"broadcastdonator.seemessage")) {
+											player.sendMessage(finalMessage);
+										}
+									} else {
 										player.sendMessage(finalMessage);
 									}
 								}
@@ -216,24 +177,6 @@ public class BroadcastDonator extends JavaPlugin {
 
 	public void log(String message) {
 		log.info(logPrefix + message);
-	}
-
-	// Permissions setup method. Called only at server start
-	private void setupPermissions() {
-		if (permissionHandler != null) {
-			return;
-		}
-
-		Plugin permissionsPlugin = this.getServer().getPluginManager()
-				.getPlugin("Permissions");
-
-		if (permissionsPlugin == null) {
-			log("Permission system not detected, defaulting to OP");
-			return;
-		}
-
-		permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-		log("Successfully hooked into Permissions");
 	}
 
 }
