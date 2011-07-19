@@ -116,7 +116,7 @@ public class BroadcastDonator extends JavaPlugin {
 									if (PermissionManager.usingPermissions) {
 										if (!PermissionManager.permissionHandler
 												.has(player,
-														"broadcastdonator.seemessage")) {
+														"broadcastdonator.exemptfrommessage")) {
 											player.sendMessage(finalMessage);
 										}
 									} else {

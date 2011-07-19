@@ -88,7 +88,7 @@ public class CommandsHandler {
 									"\u00A7$1"));
 					for (Player player : plugin.getServer().getOnlinePlayers()) {
 						if (!PermissionManager.permissionHandler.has(player,
-								"broadcastdonator.seemessage")) {
+								"broadcastdonator.exemptfrommessage")) {
 							player.sendMessage(finalMessage);
 						}
 					}
@@ -112,10 +112,7 @@ public class CommandsHandler {
 							plugin.rawMessage.replaceAll("&([0-9a-f])",
 									"\u00A7$1"));
 					for (Player player : plugin.getServer().getOnlinePlayers()) {
-						if (!PermissionManager.permissionHandler.has(player,
-								"broadcastdonator.seemessage")) {
-							player.sendMessage(finalMessage);
-						}
+						player.sendMessage(finalMessage);
 					}
 					plugin.log(finalMessage);
 					plugin.log("Manual command used by "
