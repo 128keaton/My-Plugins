@@ -2,6 +2,12 @@ name: BroadcastDonator
 main: xrevolut1onzx.broadcastdonator.BroadcastDonator
 version: 1.2.2
 commands:
-    bd:
-        description: Used to display the set donator message
-        usage: /<command> [reload/broadcast/preview]
+    reload:
+        description: Reloads the plugin
+        usage: /bd reload
+    preview:
+        description: Previews the message being broadcasted
+        usage: /bd preview
+    broadcast:
+        description: Broadcasts the loaded message to applicable people
+        usage: /bd broadcast
