@@ -87,8 +87,8 @@ public class BroadcastDonator extends JavaPlugin {
 		manageConfigFile();
 		permissionManager.disablePermissions();
 		permissionManager.setupPermissions();
-		handleRecurringMessage();
 		log("Reloaded");
+		handleRecurringMessage();
 	}
 
 	// Called on server start
@@ -98,8 +98,8 @@ public class BroadcastDonator extends JavaPlugin {
 		manageConfigFile();
 		// Sets up permissions
 		permissionManager.setupPermissions();
-		handleRecurringMessage();
 		log("Initialized");
+		handleRecurringMessage();
 	}
 
 	public void handleRecurringMessage() {
@@ -108,6 +108,9 @@ public class BroadcastDonator extends JavaPlugin {
 			getServer().getScheduler().scheduleAsyncRepeatingTask(this,
 					new Runnable() {
 						public void run() {
+							if (numberOfOnlinePlayers() == 0) {
+								return;
+							}
 							if (rawMessage != null) {
 								String finalMessage = new String(rawMessage
 										.replaceAll("&([0-9a-f])", "\u00A7$1"));
@@ -177,6 +180,11 @@ public class BroadcastDonator extends JavaPlugin {
 
 	public void log(String message) {
 		log.info(logPrefix + message);
+	}
+	
+	public int numberOfOnlinePlayers() {
+		Player[] onlinePlayers = getServer().getOnlinePlayers();
+		return onlinePlayers.length;
 	}
 
 }
