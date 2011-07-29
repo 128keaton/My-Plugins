@@ -38,9 +38,6 @@ public class BroadcastDonator extends JavaPlugin {
 	public static final String logPrefix = "[BD] ";
 	Logger log = Logger.getLogger("Minecraft");
 
-	// Initiates helping classes
-	public PermissionManager permissionManager = new PermissionManager(this);
-
 	public CommandsHandler commandsHandler = new CommandsHandler(this);
 
 	/**
@@ -85,8 +82,6 @@ public class BroadcastDonator extends JavaPlugin {
 		log("Reloading...");
 		getServer().getScheduler().cancelAllTasks();
 		manageConfigFile();
-		permissionManager.disablePermissions();
-		permissionManager.setupPermissions();
 		log("Reloaded");
 		handleRecurringMessage();
 	}
@@ -96,8 +91,6 @@ public class BroadcastDonator extends JavaPlugin {
 		log("Initiating plugin...");
 		// Handles the configuration file
 		manageConfigFile();
-		// Sets up permissions
-		permissionManager.setupPermissions();
 		log("Initialized");
 		handleRecurringMessage();
 	}
@@ -116,13 +109,8 @@ public class BroadcastDonator extends JavaPlugin {
 										.replaceAll("&([0-9a-f])", "\u00A7$1"));
 								for (Player player : getServer()
 										.getOnlinePlayers()) {
-									if (PermissionManager.usingPermissions) {
-										if (!PermissionManager.permissionHandler
-												.has(player,
-														"broadcastdonator.exemptfrommessage")) {
-											player.sendMessage(finalMessage);
-										}
-									} else {
+									if (!player
+											.hasPermission("broadcastdonator.exemptfrommessage")) {
 										player.sendMessage(finalMessage);
 									}
 								}
@@ -181,7 +169,7 @@ public class BroadcastDonator extends JavaPlugin {
 	public void log(String message) {
 		log.info(logPrefix + message);
 	}
-	
+
 	public int numberOfOnlinePlayers() {
 		Player[] onlinePlayers = getServer().getOnlinePlayers();
 		return onlinePlayers.length;
