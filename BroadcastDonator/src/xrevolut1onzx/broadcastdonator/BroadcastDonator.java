@@ -216,7 +216,7 @@ public class BroadcastDonator extends JavaPlugin {
 			recurringMessage = Boolean.parseBoolean(prop
 					.getProperty("Recurring-Broadcast"));
 			timeDelay = Integer.parseInt(prop
-					.getProperty("Time-between-messages-in-minutes)"));
+					.getProperty("Time-between-messages-in-minutes"));
 			input.close();
 		} catch (FileNotFoundException ex) {
 			ex.printStackTrace();
