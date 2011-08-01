@@ -1,13 +1,7 @@
 name: BroadcastDonator
 main: xrevolut1onzx.broadcastdonator.BroadcastDonator
-version: 1.3.2
+version: 1.3.3
 commands:
-    reload:
-        description: Reloads the plugin
-        usage: /bd reload
-    preview:
-        description: Previews the message being broadcasted
-        usage: /bd preview
-    broadcast:
-        description: Broadcasts the loaded message to applicable people
-        usage: /bd broadcast
+    bd:
+        description: BroadcastDonator commands
+        usage: /bd [broadcast/preview/reload]

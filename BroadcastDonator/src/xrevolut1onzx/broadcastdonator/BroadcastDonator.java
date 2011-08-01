@@ -26,7 +26,7 @@ public class BroadcastDonator extends JavaPlugin {
 	public static Properties prop = new Properties();
 
 	/**
-	 * Permission varaiblas
+	 * Permission variables
 	 */
 	public static PermissionHandler permissionHandler;
 	public static String permissionType = null;
@@ -68,7 +68,6 @@ public class BroadcastDonator extends JavaPlugin {
 				if (args[0].equalsIgnoreCase("broadcast")) {
 					commandsHandler.broadcast(commandTyper);
 					return true;
-
 				} else if (args[0].equalsIgnoreCase("reload")) {
 					commandsHandler.reload(commandTyper);
 					return true;
