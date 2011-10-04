@@ -52,6 +52,7 @@ public class BroadcastDonator extends JavaPlugin {
 	Logger log = Logger.getLogger("Minecraft");
 
 	public CommandsHandler commandsHandler = new CommandsHandler(this);
+	public ConsoleCommandHandler consoleCommandHandler = new ConsoleCommandHandler(this);
 
 	/**
 	 * Plugin's command handler. One command supported (/bd) with the permission
@@ -59,28 +60,54 @@ public class BroadcastDonator extends JavaPlugin {
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("bd")) {
-			Player commandTyper = (Player) sender;
-			if (args.length == 0) {
-				// No arguments
-				return false;
-			} else if (args.length == 1) {
-				if (args[0].equalsIgnoreCase("broadcast")) {
-					commandsHandler.broadcast(commandTyper);
-					return true;
-				} else if (args[0].equalsIgnoreCase("reload")) {
-					commandsHandler.reload(commandTyper);
-					return true;
-				} else if (args[0].equalsIgnoreCase("preview")) {
-					commandsHandler.preview(commandTyper);
-					return true;
+		Player player = null;
+		if (sender instanceof Player) {
+			player = (Player) sender;
+		}
+		if (player == null) { //Console commands
+			if (cmd.getName().equalsIgnoreCase("bd")) {
+				if (args.length == 0) // No arguments
+					return false;
+				else if (args.length == 1) {
+					if (args[0].equalsIgnoreCase("broadcast")) {
+						consoleCommandHandler.broadcast();
+						return true;
+					} else if (args[0].equalsIgnoreCase("reload")) {
+						consoleCommandHandler.reload();
+						return true;
+					} else if (args[0].equalsIgnoreCase("preview")) {
+						consoleCommandHandler.preview();
+						return true;
+					}
+					return false;
 				}
 				return false;
-			} else {
-				return false;
 			}
+			return false;
+		} else { // Player commands
+			if (cmd.getName().equalsIgnoreCase("bd")) {
+				Player commandTyper = (Player) sender;
+				if (args.length == 0) {
+					// No arguments
+					return false;
+				} else if (args.length == 1) {
+					if (args[0].equalsIgnoreCase("broadcast")) {
+						commandsHandler.broadcast(commandTyper);
+						return true;
+					} else if (args[0].equalsIgnoreCase("reload")) {
+						commandsHandler.reload(commandTyper);
+						return true;
+					} else if (args[0].equalsIgnoreCase("preview")) {
+						commandsHandler.preview(commandTyper);
+						return true;
+					}
+					return false;
+				} else {
+					return false;
+				}
+			}
+			return false;
 		}
-		return false;
 	}
 
 	// Called on a clean stop of the server
@@ -147,37 +174,37 @@ public class BroadcastDonator extends JavaPlugin {
 			int timeDelayInTicks = timeDelay * 1200;
 			getServer().getScheduler().scheduleAsyncRepeatingTask(this,
 					new Runnable() {
-						public void run() {
-							if (numberOfOnlinePlayers() == 0) {
-								return;
-							}
-							if (rawMessage != null) {
-								String finalMessage = new String(rawMessage
-										.replaceAll("&([0-9a-f])", "\u00A7$1"));
-								for (Player player : getServer()
-										.getOnlinePlayers()) {
-									if (usingSuperPerms) {
-										if (!player
-												.hasPermission("broadcastdonator.exemptfrommessage")) {
-											player.sendMessage(finalMessage);
-										}
-									} else if (usingPermissions) {
-										if (!BroadcastDonator.permissionHandler.has(player, "broadcastdonator.exemptfrommessage")) {
-											player.sendMessage(finalMessage);
-										}
-									} else if (usingOp) {
-										if (!player.isOp()) {
-											player.sendMessage(finalMessage);
-										}
-									}
+				public void run() {
+					if (numberOfOnlinePlayers() == 0) {
+						return;
+					}
+					if (rawMessage != null) {
+						String finalMessage = new String(rawMessage
+								.replaceAll("&([0-9a-f])", "\u00A7$1"));
+						for (Player player : getServer()
+								.getOnlinePlayers()) {
+							if (usingSuperPerms) {
+								if (!player
+										.hasPermission("broadcastdonator.exemptfrommessage")) {
+									player.sendMessage(finalMessage);
 								}
-								log(finalMessage);
-								log("Message broadcasted by repeater");
-							} else {
-								log("Reload the configuration file to load your message!");
+							} else if (usingPermissions) {
+								if (!BroadcastDonator.permissionHandler.has(player, "broadcastdonator.exemptfrommessage")) {
+									player.sendMessage(finalMessage);
+								}
+							} else if (usingOp) {
+								if (!player.isOp()) {
+									player.sendMessage(finalMessage);
+								}
 							}
 						}
-					}, 60L, timeDelayInTicks);
+						log(finalMessage);
+						log("Message broadcasted by repeater");
+					} else {
+						log("Reload the configuration file to load your message!");
+					}
+				}
+			}, 60L, timeDelayInTicks);
 		}
 	}
 
