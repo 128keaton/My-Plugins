@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry exported="true" kind="lib" path="/Users/Nick/Documents/Bukkit Library/Permissions.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/Nick/Documents/Bukkit Library/CraftBukkit.jar"/>
+	<classpathentry kind="lib" path="/Users/Nick/Documents/Bukkit/craftbukkit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
