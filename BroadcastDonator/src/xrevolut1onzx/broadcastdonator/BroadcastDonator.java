@@ -11,11 +11,7 @@ import java.util.logging.Logger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class BroadcastDonator extends JavaPlugin {
 
@@ -28,10 +24,8 @@ public class BroadcastDonator extends JavaPlugin {
 	/**
 	 * Permission variables
 	 */
-	public static PermissionHandler permissionHandler;
 	public static String permissionType = null;
 	public static boolean usingOp = false;
-	public static boolean usingPermissions = false;
 	public static boolean usingSuperPerms = false;
 
 	/**
@@ -137,36 +131,16 @@ public class BroadcastDonator extends JavaPlugin {
 
 	public void checkPermissionType() {
 		usingOp = false;
-		usingPermissions = false;
 		usingSuperPerms = false;
 		if (permissionType == null) {
 			log("Please reload the plugin to start using it");
 			return;
 		}
-		if (permissionType.equalsIgnoreCase("Permissions")) {
-			usingPermissions = true;
-			setupPermissions();
-		} else if (permissionType.equalsIgnoreCase("OP")) {
+		if (permissionType.equalsIgnoreCase("OP")) {
 			usingOp = true;
 		} else if (permissionType.equalsIgnoreCase("SuperPerms")) {
 			usingSuperPerms = true;
 		}
-	}
-
-	public void setupPermissions() {
-		if (permissionHandler != null) {
-			return;
-		}
-
-		Plugin permissionsPlugin = this.getServer().getPluginManager()
-				.getPlugin("Permissions");
-
-		if (permissionsPlugin == null) {
-			log("Permissions not detected, plugin disabled.");
-			return;
-		}
-
-		permissionHandler = ((Permissions) permissionsPlugin).getHandler();
 	}
 
 	public void handleRecurringMessage() {
@@ -186,10 +160,6 @@ public class BroadcastDonator extends JavaPlugin {
 							if (usingSuperPerms) {
 								if (!player
 										.hasPermission("broadcastdonator.exemptfrommessage")) {
-									player.sendMessage(finalMessage);
-								}
-							} else if (usingPermissions) {
-								if (!BroadcastDonator.permissionHandler.has(player, "broadcastdonator.exemptfrommessage")) {
 									player.sendMessage(finalMessage);
 								}
 							} else if (usingOp) {
@@ -215,7 +185,7 @@ public class BroadcastDonator extends JavaPlugin {
 			try {
 				config.createNewFile();
 				FileOutputStream output = new FileOutputStream(config);
-				prop.put("Permission-Manager", "Permissions");
+				prop.put("Permission-Manager", "SuperPerms");
 				prop.put(
 						"Message-To-Broadcast",
 						"[Server] Enjoy this server? Consider donating to help fund it! Options available on our website.");
