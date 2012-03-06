@@ -37,7 +37,7 @@ public class Broadcaster extends JavaPlugin
 	private final String LOG_PREFIX = "[Broadcaster] ";
 	
 	private int numberOfMessages;
-	private BroadcastMessage[] messages = new BroadcastMessage[numberOfMessages];
+	private BroadcastMessage[] messages;
 	
 	/** Called when the plugin starts up */
 	public void onEnable()
@@ -193,6 +193,8 @@ public class Broadcaster extends JavaPlugin
 			prop.load(input);
 			permissionType = prop.getProperty("Permission-Manager");
 			numberOfMessages = Integer.parseInt(prop.getProperty("Number-of-messages"));
+			
+			messages = new BroadcastMessage[numberOfMessages];
 			
 			// begin code to retrieve messages from config
 			Boolean[] u = new Boolean[numberOfMessages];
