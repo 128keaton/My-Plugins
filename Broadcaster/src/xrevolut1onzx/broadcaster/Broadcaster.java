@@ -107,7 +107,8 @@ public class Broadcaster extends JavaPlugin
 										player.sendMessage(finalMessage);
 									}
 								}
-								else if (usingOP) {
+								else if (usingOP)
+								{
 									if (!player.isOp())
 									{
 										player.sendMessage(finalMessage);
