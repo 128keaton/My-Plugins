@@ -93,6 +93,10 @@ public class Broadcaster extends JavaPlugin
 					{
 						if (rawMessage != null)
 						{
+							if (numberOfOnlinePlayers() == 0)
+							{
+								return;
+							}
 							String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));
 							for (Player player : getServer().getOnlinePlayers())
 							{
