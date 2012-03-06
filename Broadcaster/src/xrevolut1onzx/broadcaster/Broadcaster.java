@@ -45,6 +45,7 @@ public class Broadcaster extends JavaPlugin
 		log("Initializing...");
 		manageConfigFile();
 		checkPermissionType();
+		handleRecurringMessage();
 		log("Initialized");
 	}
 	
@@ -55,6 +56,7 @@ public class Broadcaster extends JavaPlugin
 		getServer().getScheduler().cancelAllTasks();
 		manageConfigFile();
 		checkPermissionType();
+		handleRecurringMessage();
 		log("Reloaded");
 	}
 	
@@ -71,6 +73,54 @@ public class Broadcaster extends JavaPlugin
 	{
 		// TODO: Handle commands
 		return false;
+	}
+	
+	/**
+	 * Handles the messages that happen more than once
+	 */
+	private void handleRecurringMessage()
+	{
+		for (int i = 0; i < numberOfMessages; i++)
+		{
+			if (messages[i].getInUse() && messages[i].getRecurring())
+			{
+				final String rawMessage = messages[i].getMessage();
+				final int messageNumber = i + 1;
+				int timeDelayInTicks = messages[i].getDelay() * 1200;
+				getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+				{
+					public void run()
+					{
+						if (rawMessage != null)
+						{
+							String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));
+							for (Player player : getServer().getOnlinePlayers())
+							{
+								if (usingSuperPerms)
+								{
+									if (!player.hasPermission("broadcastdonator.exemptfrommessage" + messageNumber))
+									{
+										player.sendMessage(finalMessage);
+									}
+								}
+								else if (usingOP) {
+									if (!player.isOp())
+									{
+										player.sendMessage(finalMessage);
+									}
+								}
+							}
+							log(finalMessage);
+							log("Message broadcasted by repeater");
+						}
+						else
+						{
+							log("Reload the configuration file to send your message!");
+						}
+					}
+				}, 60L, timeDelayInTicks);
+			}
+		}
 	}
 	
 	/** 
