@@ -1,0 +1,7 @@
+name: Broadcaster
+main: xrevolut1onzx.broadcaster.Broadcaster
+version: 1.4
+commands:
+    broadcaster:
+        description: Broadcaster commands
+        usage: /broadcaster [broadcast/preview/reload]

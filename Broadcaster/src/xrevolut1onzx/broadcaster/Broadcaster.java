@@ -15,7 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Broadcaster extends JavaPlugin
 {
-	
 	/** The string version of the root of the plugin's directory */
 	private final String MAIN_DIRECTORY = "plugins/Broadcaster";
 	/** The configuration file */
@@ -37,11 +36,15 @@ public class Broadcaster extends JavaPlugin
 	/** The string that goes before every message that's sent to the console */
 	private final String LOG_PREFIX = "[Broadcaster] ";
 	
+	private int numberOfMessages;
+	private BroadcastMessage[] messages = new BroadcastMessage[numberOfMessages];
+	
 	/** Called when the plugin starts up */
 	public void onEnable()
 	{
 		log("Initializing...");
-		// TODO: Handle initialization
+		manageConfigFile();
+		checkPermissionType();
 		log("Initialized");
 	}
 	
@@ -49,15 +52,17 @@ public class Broadcaster extends JavaPlugin
 	public void onReload()
 	{
 		log("Reloading...");
-		// TODO: Handle reloading
-		log("Reload complete");
+		getServer().getScheduler().cancelAllTasks();
+		manageConfigFile();
+		checkPermissionType();
+		log("Reloaded");
 	}
 	
 	/** Called when the plugin is disabled */
 	public void onDisable()
 	{
 		log("Disabling...");
-		// TODO: Handle disabling (shouldn't be much)
+		getServer().getScheduler().cancelAllTasks();
 		log("Disabled");
 	}
 	
@@ -104,13 +109,15 @@ public class Broadcaster extends JavaPlugin
 				prop.put("Permission-Manager", "SuperPerms");
 				prop.put("Number-of-messages", "2");
 				// first message
+				prop.put("Message1-Is-in-use", "true"); // value must be "true" or "TRUE" to actualy return true
 				prop.put("Message1", "[Server] Enjoy this server? Consider donating to help fund it! Options available on our website.");
-				prop.put("Message1-Recurring-Broadcast", "false");
 				prop.put("Message1-Time-between-messages-in-minutes", "30");
+				prop.put("Message1-Recurring-Broadcast", "false");
 				// second message
+				prop.put("Message2-Is-in-use", "false"); // value must be "false" or "FALSE" to actually return false
 				prop.put("Message2", "This is my second message");
-				prop.put("Message2-Recurring-Broadcast", "true");
 				prop.put("Message2-Time-between-messages-in-minutes", "15");
+				prop.put("Message2-Recurring-Broadcast", "true");
 				prop.store(output, "Edit the configurations to your liking"); // generic exit comment and creates the configuration file
 				output.flush();
 				output.close();
@@ -135,7 +142,24 @@ public class Broadcaster extends JavaPlugin
 			FileInputStream input = new FileInputStream(config);
 			prop.load(input);
 			permissionType = prop.getProperty("Permission-Manager");
-			// TODO: Handle message variables
+			numberOfMessages = Integer.parseInt(prop.getProperty("Number-of-messages"));
+			
+			// begin code to retrieve messages from config
+			Boolean[] u = new Boolean[numberOfMessages];
+			String[] m = new String[numberOfMessages];
+			int[] d = new int[numberOfMessages];
+			Boolean[] r = new Boolean[numberOfMessages];
+			for (int i = 0; i < numberOfMessages; i++)
+			{
+				u[i] = Boolean.parseBoolean(prop.getProperty("Message" + (i + 1) + "-Is-in-use"));
+				m[i] = prop.getProperty("Message" + (i + 1));
+				d[i] = Integer.parseInt(prop.getProperty("Message" + (i + 1) + "-Time-between-messages-in-minutes"));
+				r[i] = Boolean.parseBoolean(prop.getProperty("Message" + (i + 1) + "-Recurring-Broadcast"));
+				
+				messages[i] = new BroadcastMessage(u[i], m[i], d[i], r[i]);
+			}
+			// end code for retrieving messages for config
+			
 			input.close();
 		}
 		catch (FileNotFoundException ex)
@@ -146,6 +170,24 @@ public class Broadcaster extends JavaPlugin
 		{
 			ex.printStackTrace();
 		}
+	}
+	
+	/** Gets the current permission type */
+	public String getPermissionType()
+	{
+		return permissionType;
+	}
+	
+	/** Is true if the permission type is OP */
+	public Boolean isUsingOP()
+	{
+		return usingOP;
+	}
+	
+	/** Is true if the permission type is SuperPerms */
+	public Boolean isUsingSuperPerms()
+	{
+		return usingSuperPerms;
 	}
 	
 	/** 
