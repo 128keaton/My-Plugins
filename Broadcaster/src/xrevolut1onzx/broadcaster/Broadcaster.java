@@ -39,6 +39,8 @@ public class Broadcaster extends JavaPlugin
 	private int numberOfMessages;
 	private BroadcastMessage[] messages;
 	
+	private ConsoleCommandHandler consoleCommandHandler = new ConsoleCommandHandler(this);
+	
 	/** Called when the plugin starts up */
 	public void onEnable()
 	{
@@ -71,7 +73,40 @@ public class Broadcaster extends JavaPlugin
 	/** Called whenever a command is executed, either player or console */
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
 	{
-		// TODO: Handle commands
+		Player player = null;
+		if (sender instanceof Player)
+			player = (Player) sender;
+		
+		if (player == null) // console commands
+		{
+			if (args.length == 0) // no arguments
+				return false;
+			else if (args.length == 1)
+			{
+				if (args[0].equalsIgnoreCase("reload"))
+				{
+					consoleCommandHandler.reload();
+					return true;
+				}
+			}
+			else if (args.length == 2)
+			{
+				if (args[0].equalsIgnoreCase("preview"))
+				{
+					consoleCommandHandler.preview(args[1]);
+					return true;
+				}
+				else if (args[0].equalsIgnoreCase("broadcast"))
+				{
+					consoleCommandHandler.broadcast(args[1]);
+					return true;
+				}
+			}
+		}
+		else // player commands
+		{
+			
+		}
 		return false;
 	}
 	
@@ -102,7 +137,7 @@ public class Broadcaster extends JavaPlugin
 							{
 								if (usingSuperPerms)
 								{
-									if (!player.hasPermission("broadcastdonator.exemptfrommessage" + messageNumber))
+									if (!player.hasPermission("broadcaster.exemptfrommessage" + messageNumber))
 									{
 										player.sendMessage(finalMessage);
 									}
@@ -247,11 +282,17 @@ public class Broadcaster extends JavaPlugin
 		return usingSuperPerms;
 	}
 	
+	/** Gets the String of the message requested */
+	public String getMessage(int messageNumber)
+	{
+		return messages[messageNumber].getMessage();
+	}
+	
 	/** 
 	 * Used to print to the console
 	 * Automatically adds the plugin's prefix
 	 */
-	private void log(String m)
+	public void log(String m)
 	{
 		log.info(LOG_PREFIX + m);
 	}
