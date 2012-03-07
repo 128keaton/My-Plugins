@@ -37,6 +37,11 @@ public class ConsoleCommandHandler
 		int number = Integer.parseInt(numberString);
 		number--; // the message number in the array is one less than shown to the end-user
 		String rawMessage = plugin.getMessage(number);
+		if (plugin.getNumberOfMessages() < (number + 1))
+		{
+			plugin.log("You don't have that many messages! You currently have " + plugin.getNumberOfMessages() + " messages");
+			return;
+		}
 		if (rawMessage != null)
 		{
 			String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));
@@ -48,11 +53,20 @@ public class ConsoleCommandHandler
 		}
 	}
 	
-	public void broadcast(String number)
+	/**
+	 * Broadcasts a message to the relevant players
+	 * @param numberString The number of the message
+	 */
+	public void broadcast(String numberString)
 	{
-		int messageNumber = Integer.parseInt(number);
-		messageNumber--; // the message number in the array is one less than shown to the end-user
-		String rawMessage = plugin.getMessage(messageNumber);
+		int number = Integer.parseInt(numberString);
+		number--; // the message number in the array is one less than shown to the end-user
+		String rawMessage = plugin.getMessage(number);
+		if (plugin.getNumberOfMessages() < (number + 1))
+		{
+			plugin.log("You don't have that many messages! You currently have " + plugin.getNumberOfMessages() + " messages");
+			return;
+		}
 		if (rawMessage != null)
 		{
 			if (plugin.numberOfOnlinePlayers() == 0)
@@ -75,7 +89,7 @@ public class ConsoleCommandHandler
 			{
 				for (Player player : plugin.getServer().getOnlinePlayers())
 				{
-					if (!player.hasPermission("broadcaster.exemptfrommessage" + (messageNumber + 1)))
+					if (!player.hasPermission("broadcaster.exemptfrommessage" + (number + 1)))
 					{
 						player.sendMessage(finalMessage);
 					}
