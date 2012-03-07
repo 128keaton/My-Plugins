@@ -32,11 +32,11 @@ public class ConsoleCommandHandler
 	 * when requested by the console
 	 * @param number The number of the message, message1 = 1, message2 = 2, etc
 	 */
-	public void preview(String number)
+	public void preview(String numberString)
 	{
-		int messageNumber = Integer.parseInt(number);
-		messageNumber--; // the message number in the array is one less than shown to the end-user
-		String rawMessage = plugin.getMessage(messageNumber);
+		int number = Integer.parseInt(numberString);
+		number--; // the message number in the array is one less than shown to the end-user
+		String rawMessage = plugin.getMessage(number);
 		if (rawMessage != null)
 		{
 			String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));

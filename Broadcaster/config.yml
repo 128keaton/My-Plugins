@@ -1,0 +1,12 @@
+Permission-type: SuperPerms
+Number-of-messages: 2
+Message1:
+  Is-In-Use: true
+  Message: This is your first message.
+  Delay-in-minutes: 1
+  Recurring-broadcast: true
+Message2:
+  Is-In-Use: true
+  Message: This is your second message.
+  Delay-in-minutes: 1
+  Recurring-broadcast: true

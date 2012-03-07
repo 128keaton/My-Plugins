@@ -1,11 +1,5 @@
 package xrevolut1onzx.broadcaster;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
@@ -14,13 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Broadcaster extends JavaPlugin
-{
-	/** The string version of the root of the plugin's directory */
-	private final String MAIN_DIRECTORY = "plugins/Broadcaster";
-	/** The configuration file */
-	private File config = new File(MAIN_DIRECTORY + File.separator + "config.yml");
-	private Properties prop = new Properties();
-	
+{	
 	/**
 	 * Contains the current permissions type
 	 * based on what's received from the config file
@@ -36,9 +24,12 @@ public class Broadcaster extends JavaPlugin
 	/** The string that goes before every message that's sent to the console */
 	private final String LOG_PREFIX = "[Broadcaster] ";
 	
+	/** Number of messages currently being broadcasted */
 	private int numberOfMessages;
+	/** All of the messages in an array */
 	private BroadcastMessage[] messages;
 	
+	/** Handles the commands for the console */
 	private ConsoleCommandHandler consoleCommandHandler = new ConsoleCommandHandler(this);
 	
 	/** Called when the plugin starts up */
@@ -182,12 +173,43 @@ public class Broadcaster extends JavaPlugin
 			usingOP = true;
 	}
 	
+	public void manageConfigFile()
+	{
+		this.getConfig().options().copyDefaults();
+		this.saveConfig();
+		
+		permissionType = getConfig().getString("Permission-type");
+		numberOfMessages = getConfig().getInt("Number-of-messages");
+		
+		messages = new BroadcastMessage[numberOfMessages];
+		
+		Boolean u;
+		String m;
+		int d;
+		Boolean r;
+		
+		for (int i = 0; i < numberOfMessages; i++)
+		{
+			u = getConfig().getBoolean("Message" + (i + 1) + ".Is-In-Use");
+			m = getConfig().getString("Message" + (i + 1) + ".Message");
+			d = getConfig().getInt("Message" + (i + 1) + ".Delay-in-minutes");
+			r = getConfig().getBoolean("Message" + (i + 1) + ".Recurring-broadcast");
+			
+			System.out.println(getConfig().getBoolean("Message" + (i + 1) + ".Is-In-Use"));
+			System.out.println(getConfig().getString("Message" + (i + 1) + ".Message"));
+			System.out.println(getConfig().getInt("Message" + (i + 1) + ".Delay-in-minutes"));
+			System.out.println(getConfig().getBoolean("Message" + (i + 1) + ".Recurring-broadcast"));
+			
+			messages[i] = new BroadcastMessage(u, m, d, r);
+		}
+	}
+	
 	/**
 	 * Manages the configuration file
 	 * Creates one with default parameters if one doesn't exist
 	 * and otherwise loads the existing one
 	 */
-	public void manageConfigFile()
+	/*public void manageConfigFile()
 	{
 		new File(MAIN_DIRECTORY).mkdir(); // Creates the plugin's folder
 		if (!config.exists())
@@ -222,10 +244,10 @@ public class Broadcaster extends JavaPlugin
 		{
 			loadConfigFile();
 		}
-	}
+	}*/
 	
 	/** Loads the configuration file */
-	public void loadConfigFile()
+	/*public void loadConfigFile()
 	{
 		try
 		{
@@ -262,7 +284,7 @@ public class Broadcaster extends JavaPlugin
 		{
 			ex.printStackTrace();
 		}
-	}
+	}*/
 	
 	/** Gets the current permission type */
 	public String getPermissionType()
@@ -283,9 +305,9 @@ public class Broadcaster extends JavaPlugin
 	}
 	
 	/** Gets the String of the message requested */
-	public String getMessage(int messageNumber)
+	public String getMessage(int i)
 	{
-		return messages[messageNumber].getMessage();
+		return messages[i].getMessage();
 	}
 	
 	/** 
