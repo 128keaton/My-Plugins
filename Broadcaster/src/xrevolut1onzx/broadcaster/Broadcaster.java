@@ -281,7 +281,8 @@ public class Broadcaster extends JavaPlugin
 	}
 	
 	/** Returns the number of online players */
-	public int numberOfOnlinePlayers() {
+	public int numberOfOnlinePlayers()
+	{
 		Player[] onlinePlayers = getServer().getOnlinePlayers();
 		return onlinePlayers.length;
 	}
