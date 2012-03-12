@@ -1,0 +1,20 @@
+Permission-type: SuperPerms
+Number-of-messages: 2
+Message1:
+  Is-In-Use: true
+  Message: This is your first message.
+  Delay-in-minutes: 1
+  Recurring-broadcast: true
+  Offset-delay: 5
+  Op:
+    Op-sees-message: true
+    Player-sees-message: false
+Message2:
+  Is-In-Use: true
+  Message: This is your second message.
+  Delay-in-minutes: 1
+  Recurring-broadcast: true
+  Offset-delay: 10
+  Op:
+    Op-sees-message: true
+    Player-sees-message: false
