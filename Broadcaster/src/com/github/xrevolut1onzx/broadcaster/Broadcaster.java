@@ -1,4 +1,4 @@
-package xrevolut1onzx.broadcaster;
+package com.github.xrevolut1onzx.broadcaster;
 
 import java.util.logging.Logger;
 
@@ -7,8 +7,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import xrevolut1onzx.broadcaster.commands.CommandHandler;
-import xrevolut1onzx.broadcaster.commands.ConsoleCommandHandler;
+import com.github.xrevolut1onzx.broadcaster.commands.CommandHandler;
+import com.github.xrevolut1onzx.broadcaster.commands.ConsoleCommandHandler;
+
 
 public class Broadcaster extends JavaPlugin
 {	

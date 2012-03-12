@@ -1,4 +1,4 @@
-package xrevolut1onzx.broadcaster;
+package com.github.xrevolut1onzx.broadcaster;
 
 public class BroadcastMessage
 {

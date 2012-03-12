@@ -1,9 +1,10 @@
-package xrevolut1onzx.broadcaster.commands;
+package com.github.xrevolut1onzx.broadcaster.commands;
 
 import org.bukkit.entity.Player;
 
-import xrevolut1onzx.broadcaster.BroadcastMessage;
-import xrevolut1onzx.broadcaster.Broadcaster;
+import com.github.xrevolut1onzx.broadcaster.BroadcastMessage;
+import com.github.xrevolut1onzx.broadcaster.Broadcaster;
+
 
 public class ConsoleCommandHandler
 {
