@@ -52,7 +52,6 @@ public class Broadcaster extends JavaPlugin
 	{
 		log("Reloading...");
 		getServer().getScheduler().cancelAllTasks();
-		this.saveConfig();
 		manageConfigFile();
 		checkPermissionType();
 		handleRecurringMessage();
@@ -63,7 +62,6 @@ public class Broadcaster extends JavaPlugin
 	public void onDisable()
 	{
 		getServer().getScheduler().cancelAllTasks();
-		this.saveConfig();
 		log("Disabled");
 	}
 	
@@ -230,10 +228,7 @@ public class Broadcaster extends JavaPlugin
 	 * Manages everything to do with the configuration file
 	 */
 	public void manageConfigFile()
-	{
-		this.getConfig().options().copyDefaults(true);
-		this.saveConfig();
-		
+	{	
 		permissionType = getConfig().getString("Permission-type");
 		numberOfMessages = getConfig().getInt("Number-of-messages");
 		

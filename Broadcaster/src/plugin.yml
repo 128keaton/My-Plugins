@@ -1,6 +1,6 @@
 name: Broadcaster
 main: com.github.xrevolut1onzx.broadcaster.Broadcaster
-version: 2.1
+version: 2.1.1
 commands:
     broadcaster:
         description: Broadcaster commands
