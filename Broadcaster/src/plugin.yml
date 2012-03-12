@@ -1,5 +1,5 @@
 name: Broadcaster
-main: xrevolut1onzx.broadcaster.Broadcaster
+main: com.github.xrevolut1onzx.broadcaster.Broadcaster
 version: 2.1
 commands:
     broadcaster:
