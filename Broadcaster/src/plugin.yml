@@ -1,6 +1,6 @@
 name: Broadcaster
 main: com.github.xrevolut1onzx.broadcaster.Broadcaster
-version: 2.1.2
+version: 2.1.3
 description: Broadcasts a variety of messages at a regular interval
 author: xREVOLUT1ONZx
 website: http://forums.bukkit.org/threads/admn-chat-misc-broadcaster-v2-1-1-broadcast-all-of-your-messages-2034.25362/

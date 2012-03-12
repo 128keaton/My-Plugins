@@ -1,5 +1,7 @@
 package com.github.xrevolut1onzx.broadcaster;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
@@ -23,6 +25,9 @@ public class Broadcaster extends JavaPlugin
 	/** True if using Op */
 	private Boolean usingOp;
 	
+	/** The location where the config file is stored*/
+	private static final String CONFIG_FILE = "plugins/Broadcaster/config.yml";
+	
 	/** Used to log all events and prints to console */
 	private Logger log = Logger.getLogger("Minecraft");
 	/** The string that goes before every message that's sent to the console */
@@ -41,6 +46,7 @@ public class Broadcaster extends JavaPlugin
 	/** Called when the plugin starts up */
 	public void onEnable()
 	{
+		pluginMetrics(this);
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 		manageConfigFile();
@@ -230,7 +236,10 @@ public class Broadcaster extends JavaPlugin
 	 * Manages everything to do with the configuration file
 	 */
 	public void manageConfigFile()
-	{	
+	{
+		File file = new File(CONFIG_FILE);
+		if (!file.exists())
+			getConfig().options().copyDefaults(true);
 		permissionType = getConfig().getString("Permission-type");
 		numberOfMessages = getConfig().getInt("Number-of-messages");
 		
@@ -296,6 +305,23 @@ public class Broadcaster extends JavaPlugin
 	public BroadcastMessage getBroadcastMessage(int i)
 	{
 		return messages[i];
+	}
+	
+	/**
+	 * Handles the usage tracking for this plugin
+	 * @param plugin The Broadcaster instance to pass in
+	 */
+	private void pluginMetrics(Broadcaster plugin)
+	{
+		try
+		{
+		    Metrics metrics = new Metrics(plugin);
+		    metrics.start();
+		}
+		catch (IOException e)
+		{
+		    // Failed to submit the stats :-(
+		}
 	}
 	
 	/** 
