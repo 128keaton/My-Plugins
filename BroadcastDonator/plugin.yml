@@ -1,7 +1,0 @@
-name: BroadcastDonator
-main: xrevolut1onzx.broadcastdonator.BroadcastDonator
-version: 1.4
-commands:
-    bd:
-        description: BroadcastDonator commands
-        usage: /bd [broadcast/preview/reload]
