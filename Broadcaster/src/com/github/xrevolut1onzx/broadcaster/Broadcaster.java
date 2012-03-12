@@ -41,6 +41,8 @@ public class Broadcaster extends JavaPlugin
 	/** Called when the plugin starts up */
 	public void onEnable()
 	{
+		getConfig().options().copyDefaults(true);
+		saveConfig();
 		manageConfigFile();
 		checkPermissionType();
 		handleRecurringMessage();
