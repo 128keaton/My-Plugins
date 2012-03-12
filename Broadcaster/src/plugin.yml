@@ -1,6 +1,6 @@
 name: Broadcaster
 main: com.github.xrevolut1onzx.broadcaster.Broadcaster
-version: 2.1.1
+version: 2.1.2
 description: Broadcasts a variety of messages at a regular interval
 author: xREVOLUT1ONZx
 website: http://forums.bukkit.org/threads/admn-chat-misc-broadcaster-v2-1-1-broadcast-all-of-your-messages-2034.25362/
@@ -10,3 +10,20 @@ commands:
     broadcaster:
         description: Commands used to operate the Broadcaster plugin
         usage: /broadcaster [broadcast/preview/reload]
+        
+permissions:
+    broadcaster.*:
+        description: Gives access to all of Broadcaster's commands, excluding exemptfrommessage nodes
+        children:
+            broadcaster.preview: true
+            broadcaster.broadcast: true
+            broadcaster.reload: true
+    broadcaster.use:
+        description: Gives access to preview and broadcast, but not reload
+        children:
+            broadcaster.preview: true
+            broadcaster.broadcast: true
+    broadcaster.preview:
+        description: Allows you to preview a message before broadcasting it
+    broadcaster.broadcast:
+        description: Allows you to broadcast a message
