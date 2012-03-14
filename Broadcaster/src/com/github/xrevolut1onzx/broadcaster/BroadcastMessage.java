@@ -10,16 +10,14 @@ public class BroadcastMessage
 	private int delay;
 	/** If the message is repeating or not */
 	private Boolean recurring;
-	/**
-	 * Keeps track of the number of seconds
-	 * between server start and the first
-	 * broadcasting of this message
-	 */
+	/** number of seconds from plugin start to first message */
 	private int offsetDelay;
 	/** True if the Op should see the message, only affected when using Op permission type */
 	private Boolean opSeesMessage;
 	/** True if the player should see the message, only affected when using Op permission type*/
 	private Boolean playerSeesMessage;
+	/** The task number assigned by the scheduler for the specific message */
+	private int taskNumber;
 	
 	/**
 	 * Makes a new message to be sent to the players
@@ -162,6 +160,24 @@ public class BroadcastMessage
 	public Boolean getPlayerSeesMessage()
 	{
 		return playerSeesMessage;
+	}
+	
+	/**
+	 * Sets the task number for the BroadcastMessage
+	 * @param i The task number to set
+	 */
+	public void setTaskNumber(int i)
+	{
+		taskNumber = i;
+	}
+	
+	/**
+	 * Gets the task number for the BroadcastMessage
+	 * @return The task number of the BroadcastMessage
+	 */
+	public int getTaskNumber()
+	{
+		return taskNumber;
 	}
 	
 }

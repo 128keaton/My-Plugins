@@ -1,6 +1,5 @@
 package com.github.xrevolut1onzx.broadcaster;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -25,9 +24,6 @@ public class Broadcaster extends JavaPlugin
 	/** True if using Op */
 	private Boolean usingOp;
 	
-	/** The location where the config file is stored*/
-	private static final String CONFIG_FILE = "plugins/Broadcaster/config.yml";
-	
 	/** Used to log all events and prints to console */
 	private Logger log = Logger.getLogger("Minecraft");
 	/** The string that goes before every message that's sent to the console */
@@ -47,8 +43,6 @@ public class Broadcaster extends JavaPlugin
 	public void onEnable()
 	{
 		pluginMetrics(this);
-		getConfig().options().copyDefaults(true);
-		saveConfig();
 		manageConfigFile();
 		checkPermissionType();
 		handleRecurringMessage();
@@ -59,7 +53,7 @@ public class Broadcaster extends JavaPlugin
 	public void onReload()
 	{
 		log("Reloading...");
-		getServer().getScheduler().cancelAllTasks();
+		cancelAllBroadcasterMessages();
 		manageConfigFile();
 		checkPermissionType();
 		handleRecurringMessage();
@@ -69,7 +63,7 @@ public class Broadcaster extends JavaPlugin
 	/** Called when the plugin is disabled */
 	public void onDisable()
 	{
-		getServer().getScheduler().cancelAllTasks();
+		cancelAllBroadcasterMessages();
 		log("Disabled");
 	}
 	
@@ -162,7 +156,7 @@ public class Broadcaster extends JavaPlugin
 				final int messageNumber = i + 1; // Message number according to the end-user, not the number of the slot in the array
 				int timeDelayInTicks = messages[i].getDelay() * 1200;
 				long offset = ((long) messages[i].getOffsetDelay()) * 20; // Gets the offset and multiplies by 1 tick (20)
-				getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+				messages[i].setTaskNumber(getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
 				{
 					public void run()
 					{
@@ -208,7 +202,7 @@ public class Broadcaster extends JavaPlugin
 							log("Reload the configuration file to send your message!");
 						}
 					}
-				}, offset, timeDelayInTicks);
+				}, offset, timeDelayInTicks));
 			}
 		}
 	}
@@ -237,9 +231,9 @@ public class Broadcaster extends JavaPlugin
 	 */
 	public void manageConfigFile()
 	{
-		File file = new File(CONFIG_FILE);
-		if (!file.exists())
-			getConfig().options().copyDefaults(true);
+		reloadConfig();
+		getConfig().options().copyDefaults(true);
+		saveConfig();
 		permissionType = getConfig().getString("Permission-type");
 		numberOfMessages = getConfig().getInt("Number-of-messages");
 		
@@ -305,6 +299,26 @@ public class Broadcaster extends JavaPlugin
 	public BroadcastMessage getBroadcastMessage(int i)
 	{
 		return messages[i];
+	}
+	
+	/**
+	 * Cancels all of the BroadcastMessage tasks
+	 */
+	private void cancelAllBroadcasterMessages()
+	{
+		for(int i = 0; i < messages.length; i++)
+		{
+			cancelBroadcasterMessage(i);
+		}
+	}
+	
+	/**
+	 * Cancels a specific BroadcasterMessage
+	 * @param i The position in the array of BroadcasterMessages
+	 */
+	private void cancelBroadcasterMessage(int i)
+	{
+		getServer().getScheduler().cancelTask(messages[i].getTaskNumber());
 	}
 	
 	/**

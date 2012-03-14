@@ -61,8 +61,7 @@ public class CommandHandler
 		{
 			if (typer.isOp())
 			{
-				int number = Integer.parseInt(numberString);
-				number--; // the message number in the array is one less than shown to the end-user
+				int number = (Integer.parseInt(numberString)) - 1;
 				String rawMessage = plugin.getMessage(number);
 				if (plugin.getNumberOfMessages() < (number + 1))
 				{
@@ -87,8 +86,7 @@ public class CommandHandler
 		{
 			if (typer.hasPermission("broadcaster.preview"))
 			{
-				int number = Integer.parseInt(numberString);
-				number--; // the message number in the array is one less than shown to the end-user
+				int number = (Integer.parseInt(numberString)) - 1;
 				String rawMessage = plugin.getMessage(number);
 				if (plugin.getNumberOfMessages() < (number + 1))
 				{
@@ -122,7 +120,7 @@ public class CommandHandler
 		{
 			if (typer.isOp())
 			{
-				int number = Integer.parseInt(numberString);
+				int number = (Integer.parseInt(numberString)) - 1;
 				number--; // the message number in the array is one less than shown to the end-user
 				String rawMessage = plugin.getMessage(number);
 				BroadcastMessage broadcastMessage = plugin.getBroadcastMessage(number);
@@ -167,8 +165,7 @@ public class CommandHandler
 		{
 			if (typer.hasPermission("broadcaster.broadcast"))
 			{
-				int number = Integer.parseInt(numberString);
-				number--; // the message number in the array is one less than shown to the end-user
+				int number = (Integer.parseInt(numberString)) - 1;
 				String rawMessage = plugin.getMessage(number);
 				if (plugin.getNumberOfMessages() < (number + 1))
 				{
@@ -198,5 +195,4 @@ public class CommandHandler
 				typer.sendMessage("You don't have permission to use this command.");
 		}
 	}
-	
 }

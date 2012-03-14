@@ -38,8 +38,7 @@ public class ConsoleCommandHandler
 	 */
 	public void preview(String numberString)
 	{
-		int number = Integer.parseInt(numberString);
-		number--; // the message number in the array is one less than shown to the end-user
+		int number = (Integer.parseInt(numberString)) - 1;
 		String rawMessage = plugin.getMessage(number);
 		if (plugin.getNumberOfMessages() < (number + 1))
 		{
