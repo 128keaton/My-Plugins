@@ -1,5 +1,6 @@
 package com.github.xrevolut1onzx.broadcaster;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -166,7 +167,7 @@ public class Broadcaster extends JavaPlugin
 							{
 								return;
 							}
-							String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));
+							String finalMessage = replaceColors(rawMessage);
 							for (Player player : getServer().getOnlinePlayers())
 							{
 								if (usingSuperPerms)
@@ -231,9 +232,13 @@ public class Broadcaster extends JavaPlugin
 	 */
 	public void manageConfigFile()
 	{
-		reloadConfig();
-		getConfig().options().copyDefaults(true);
-		saveConfig();
+		final String CONFIG_FILE_PATH = "plugins/" + this.getName() + "/config.yml";
+		File file = new File(CONFIG_FILE_PATH);
+		if (!file.exists())
+		{
+			getConfig().options().copyDefaults(true);
+			saveConfig();
+		}
 		permissionType = getConfig().getString("Permission-type");
 		numberOfMessages = getConfig().getInt("Number-of-messages");
 		
@@ -345,6 +350,11 @@ public class Broadcaster extends JavaPlugin
 	public void log(String m)
 	{
 		log.info(LOG_PREFIX + m);
+	}
+	
+	public String replaceColors(String message)
+	{
+		return message.replaceAll("&([0-9a-f])", "\u00A7$1");
 	}
 	
 	/** Returns the number of online players */

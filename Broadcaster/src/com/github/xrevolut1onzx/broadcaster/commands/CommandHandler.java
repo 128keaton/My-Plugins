@@ -70,7 +70,7 @@ public class CommandHandler
 				}
 				if (rawMessage != null)
 				{
-					String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));
+					String finalMessage = plugin.replaceColors(rawMessage);
 					typer.sendMessage("Preview: " + finalMessage);
 				}
 				else
@@ -95,7 +95,7 @@ public class CommandHandler
 				}
 				if (rawMessage != null)
 				{
-					String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));
+					String finalMessage = plugin.replaceColors(rawMessage);
 					typer.sendMessage("Preview: " + finalMessage);
 				}
 				else
@@ -131,7 +131,7 @@ public class CommandHandler
 				}
 				if (rawMessage != null)
 				{
-					String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));
+					String finalMessage = plugin.replaceColors(rawMessage);
 					for (Player player : plugin.getServer().getOnlinePlayers())
 					{
 						if (broadcastMessage.getOpSeesMessage())
@@ -174,7 +174,7 @@ public class CommandHandler
 				}
 				if (rawMessage != null)
 				{
-					String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));
+					String finalMessage = plugin.replaceColors(rawMessage);
 					for (Player player : plugin.getServer().getOnlinePlayers())
 					{
 						if (!player.hasPermission("broadcaster.exemptfrommessage" + (number + 1)))

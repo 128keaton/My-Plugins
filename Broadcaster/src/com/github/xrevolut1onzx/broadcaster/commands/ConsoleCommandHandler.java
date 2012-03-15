@@ -47,7 +47,7 @@ public class ConsoleCommandHandler
 		}
 		if (rawMessage != null)
 		{
-			String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));
+			String finalMessage = plugin.replaceColors(rawMessage);
 			plugin.log("Preview: " + finalMessage);
 		}
 		else
@@ -77,7 +77,7 @@ public class ConsoleCommandHandler
 				plugin.log("No one online!");
 				return;
 			}
-			String finalMessage = new String(rawMessage.replaceAll("&([0-9a-f])", "\u00A7$1"));
+			String finalMessage = plugin.replaceColors(rawMessage);
 			if (plugin.isUsingOp())
 			{
 				for (Player player : plugin.getServer().getOnlinePlayers())
