@@ -9,8 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.xrevolut1onzx.broadcaster.commands.CommandHandler;
-import com.github.xrevolut1onzx.broadcaster.commands.ConsoleCommandHandler;
+import com.github.xrevolut1onzx.broadcaster.commands.CommandMethods;
 
 
 public class Broadcaster extends JavaPlugin
@@ -35,10 +34,8 @@ public class Broadcaster extends JavaPlugin
 	/** All of the messages in an array */
 	private BroadcastMessage[] messages;
 	
-	/** Handles the commands from the console */
-	private ConsoleCommandHandler consoleCommandHandler = new ConsoleCommandHandler(this);
-	/** Handles the commands from the players */
-	private CommandHandler commandHandler = new CommandHandler(this);
+	/** Contains all of the methods used to execute the commands*/
+	private CommandMethods commandMethods = new CommandMethods(this);
 	
 	/** Called when the plugin starts up */
 	public void onEnable()
@@ -75,72 +72,36 @@ public class Broadcaster extends JavaPlugin
 		if (sender instanceof Player)
 			player = (Player) sender;
 		
-		if (player == null) // console commands
+		if (cmd.getName().equalsIgnoreCase("broadcaster"))
 		{
-			if (cmd.getName().equalsIgnoreCase("broadcaster"))
+			if (args.length == 0)
+				return false;
+			else if (args.length == 1)
 			{
-				if (args.length == 0) // no arguments
-					return false;
-				else if (args.length == 1)
+				if (args[0].equalsIgnoreCase("reload"))
 				{
-					if (args[0].equalsIgnoreCase("reload"))
-					{
-						consoleCommandHandler.reload();
-						return true;
-					}
-					return false;
+					commandMethods.reload(player);
+					return true;
 				}
-				else if (args.length == 2)
+				return false;
+			}
+			else if (args.length == 2)
+			{
+				if (args[0].equalsIgnoreCase("preview"))
 				{
-					if (args[0].equalsIgnoreCase("preview"))
-					{
-						consoleCommandHandler.preview(args[1]);
-						return true;
-					}
-					else if (args[0].equalsIgnoreCase("broadcast"))
-					{
-						consoleCommandHandler.broadcast(args[1]);
-						return true;
-					}
-					return false;
+					commandMethods.preview(player, args[1]);
+					return true;
+				}
+				else if (args[0].equalsIgnoreCase("broadcast"))
+				{
+					commandMethods.broadcast(player, args[1]);
+					return true;
 				}
 				return false;
 			}
 			return false;
 		}
-		else // player commands
-		{
-			if (cmd.getName().equalsIgnoreCase("broadcaster"))
-			{
-				Player commandTyper = (Player) sender;
-				if (args.length == 0) // no arguments
-					return false;
-				else if (args.length == 1)
-				{
-					if (args[0].equalsIgnoreCase("reload"))
-					{
-						commandHandler.reload(commandTyper);
-					}
-					return false;
-				}
-				else if (args.length == 2)
-				{
-					if (args[0].equalsIgnoreCase("preview"))
-					{
-						commandHandler.preview(commandTyper, args[1]);
-						return true;
-					}
-					else if (args[0].equalsIgnoreCase("broadcast"))
-					{
-						commandHandler.broadcast(commandTyper, args[1]);
-						return true;
-					}
-					return false;
-				}
-				return false;
-			}
-			return false;
-		}
+		return false;
 	}
 	
 	/**
@@ -152,58 +113,12 @@ public class Broadcaster extends JavaPlugin
 		{
 			if (messages[i].getInUse() && messages[i].getRecurring())
 			{
-				final String rawMessage = messages[i].getMessage();
-				final BroadcastMessage broadcastMessage = messages[i];
-				final int messageNumber = i + 1; // Message number according to the end-user, not the number of the slot in the array
+				String message = messages[i].getMessage();
+				BroadcastMessage broadcastMessage = messages[i];
+				int messageNumber = i + 1;
 				int timeDelayInTicks = messages[i].getDelay() * 1200;
-				long offset = ((long) messages[i].getOffsetDelay()) * 20; // Gets the offset and multiplies by 1 tick (20)
-				messages[i].setTaskNumber(getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
-				{
-					public void run()
-					{
-						if (rawMessage != null)
-						{
-							if (numberOfOnlinePlayers() == 0)
-							{
-								return;
-							}
-							String finalMessage = replaceColors(rawMessage);
-							for (Player player : getServer().getOnlinePlayers())
-							{
-								if (usingSuperPerms)
-								{
-									if (!player.hasPermission("broadcaster.exemptfrommessage" + messageNumber))
-									{
-										player.sendMessage(finalMessage);
-									}
-								}
-								else if (usingOp)
-								{
-									if (broadcastMessage.getOpSeesMessage())
-									{
-										if (player.isOp())
-										{
-											player.sendMessage(finalMessage);
-										}
-									}
-									if (broadcastMessage.getPlayerSeesMessage())
-									{
-										if (!player.isOp())
-										{
-											player.sendMessage(finalMessage);
-										}
-									}
-								}
-							}
-							log(finalMessage);
-							log("Message broadcasted by repeater");
-						}
-						else
-						{
-							log("Reload the configuration file to send your message!");
-						}
-					}
-				}, offset, timeDelayInTicks));
+				long offset = messages[i].getOffsetDelay() * 20;
+				scheduleRecurringMessage(message, broadcastMessage, messageNumber, timeDelayInTicks, offset);
 			}
 		}
 	}
@@ -307,6 +222,65 @@ public class Broadcaster extends JavaPlugin
 	}
 	
 	/**
+	 * Schedules a recurring message using Bukkit's async task scheduler and assigns the BroadcastMessage the corresponding task ID returned from the scheduler
+	 * @param rawMessage The message drawn straight from the configuration file, still needs to be parsed for colors
+	 * @param broadcastMessage The BroadcastMessage associated with what's being scheduled
+	 * @param messageNumber The message number according to the end-user, not the number of what's in the array
+	 * @param timeDelayInTicks The time delay between messages
+	 * @param offset The initial delay between plugin initiation and the first message in ticks, not seconds
+	 */
+	public void scheduleRecurringMessage(final String rawMessage, final BroadcastMessage broadcastMessage, final int messageNumber, int timeDelayInTicks, long offset)
+	{
+		broadcastMessage.setTaskNumber(getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+		{
+			public void run()
+			{
+				if (rawMessage != null)
+				{
+					if (numberOfOnlinePlayers() == 0)
+					{
+						return;
+					}
+					String finalMessage = replaceColors(rawMessage);
+					for (Player player : getServer().getOnlinePlayers())
+					{
+						if (usingSuperPerms)
+						{
+							if (!player.hasPermission("broadcaster.exemptfrommessage" + messageNumber))
+							{
+								player.sendMessage(finalMessage);
+							}
+						}
+						else if (usingOp)
+						{
+							if (broadcastMessage.getOpSeesMessage())
+							{
+								if (player.isOp())
+								{
+									player.sendMessage(finalMessage);
+								}
+							}
+							if (broadcastMessage.getPlayerSeesMessage())
+							{
+								if (!player.isOp())
+								{
+									player.sendMessage(finalMessage);
+								}
+							}
+						}
+					}
+					log(finalMessage);
+					log("Message broadcasted by repeater");
+				}
+				else
+				{
+					log("Reload the configuration file to send your message!");
+				}
+			}
+		}, offset, timeDelayInTicks));
+	}
+	
+	/**
 	 * Cancels all of the BroadcastMessage tasks
 	 */
 	private void cancelAllBroadcasterMessages()
@@ -334,12 +308,12 @@ public class Broadcaster extends JavaPlugin
 	{
 		try
 		{
-		    Metrics metrics = new Metrics(plugin);
-		    metrics.start();
+			Metrics metrics = new Metrics(plugin);
+			metrics.start();
 		}
 		catch (IOException e)
 		{
-		    // Failed to submit the stats :-(
+			// Failed to submit the stats :-(
 		}
 	}
 	
